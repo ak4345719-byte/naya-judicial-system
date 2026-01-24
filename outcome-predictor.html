@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Outcome Predictor | Naya Judicial System{% endblock %}
+
+{% block content %}
+<div class="h-[calc(100vh-140px)] flex flex-col max-w-6xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl font-black text-gray-900 dark:text-white tracking-tight">AI Outcome Predictor</h1>
+        <p class="text-gray-500">Historical data-driven predictions using High Court metadata (1950-2001)</p>
+    </div>
+
+    <div class="grid grid-cols-12 gap-8 flex-1">
+        <!-- Configuration -->
+        <div class="col-span-4 space-y-6">
+            <div
+                class="bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-800">
+                <h3 class="font-bold text-gray-800 dark:text-white mb-4">Case Parameters</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Bench/High Court</label>
+                        <select id="benchSelect"
+                            class="w-full p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-white/5 text-sm">
+                            <option>Gujarat High Court</option>
+                            <option>Delhi High Court</option>
+                            <option>Bombay High Court</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Primary Statute</label>
+                        <input type="text" id="statuteInput" placeholder="e.g. IPC 302"
+                            class="w-full p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-white/5 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Complexity Level</label>
+                        <div class="flex gap-2">
+                            <button
+                                class="flex-1 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold ring-1 ring-indigo-200">Standard</button>
+                            <button
+                                class="flex-1 py-2 bg-gray-50 text-gray-400 rounded-lg text-xs font-bold">Complex</button>
+                        </div>
+                    </div>
+                    <button id="runSimulation"
+                        class="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black rounded-xl shadow-xl hover:scale-[1.02] transition-all">
+                        RUN HISTORICAL SIMULATION
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 bg-amber-50 border border-amber-100 rounded-xl">
+                <div class="flex gap-3">
+                    <span class="iconify text-amber-500 mt-1" data-icon="lucide:alert-triangle" data-width="20"></span>
+                    <p class="text-[10px] text-amber-700 leading-relaxed font-medium">
+                        <strong>JUDICIAL AI DISCLAIMER:</strong> Predictions are based on historical datasets
+                        (1950-2001) and should only be used as a research reference, not as legal advice.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Area -->
+        <div
+            class="col-span-8 bg-white dark:bg-surface-dark rounded-3xl shadow-soft border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col">
+            <div id="emptyState" class="flex-1 flex flex-col items-center justify-center p-20 text-center">
+                <div
+                    class="w-24 h-24 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-6 text-gray-200">
+                    <span class="iconify" data-icon="lucide:database" data-width="48"></span>
+                </div>
+                <h4 class="text-xl font-bold text-gray-400">Ready to Analyze Dataset</h4>
+                <p class="text-gray-400 max-w-sm mx-auto mt-2">Configure case parameters and click run to match against
+                    42,000+ historical precedents.</p>
+            </div>
+
+            <div id="resultsState" class="hidden flex-1 p-8 space-y-8 overflow-y-auto">
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="bg-indigo-600 p-6 rounded-2xl text-white">
+                        <div class="text-[10px] font-bold opacity-60 uppercase mb-1 tracking-widest">Matched Precedents
+                        </div>
+                        <div class="text-3xl font-black" id="matchCount">142</div>
+                    </div>
+                    <div class="bg-emerald-500 p-6 rounded-2xl text-white">
+                        <div class="text-[10px] font-bold opacity-60 uppercase mb-1 tracking-widest">Likely Outcome
+                        </div>
+                        <div class="text-xl font-black leading-tight" id="likelyOutcome">DISMISSED @ ADMISSION</div>
+                    </div>
+                    <div class="bg-amber-100 p-6 rounded-2xl text-amber-800 border border-amber-200">
+                        <div class="text-[10px] font-bold opacity-60 uppercase mb-1 tracking-widest text-amber-600">Avg.
+                            Pendency</div>
+                        <div class="text-3xl font-black" id="avgDuration">4.2 <span
+                                class="text-sm font-normal">Years</span></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-800 dark:text-white mb-4">Historical Disposal Distribution</h3>
+                    <div class="space-y-3">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[11px] font-bold">
+                                <span>Dismissed</span><span>64%</span>
+                            </div>
+                            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-indigo-500" style="width: 64%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[11px] font-bold"><span>Allowed</span><span>22%</span>
+                            </div>
+                            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-400" style="width: 22%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[11px] font-bold">
+                                <span>Compounded</span><span>14%</span>
+                            </div>
+                            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-amber-400" style="width: 14%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-800 dark:text-white mb-4">Recent Dataset Matches</h3>
+                    <div class="space-y-3" id="matchList">
+                        <!-- Matches will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('runSimulation').onclick = async () => {
+        const btn = document.getElementById('runSimulation');
+        const statute = document.getElementById('statuteInput').value;
+        const bench = document.getElementById('benchSelect').value;
+
+        btn.innerHTML = '<span class="iconify animate-spin mr-2" data-icon="lucide:loader-2"></span> DATASET SEARCH...';
+        btn.disabled = true;
+
+        try {
+            const resp = await fetch('/api/ai/simulate-outcome', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ statute, bench })
+            });
+            const data = await resp.json();
+
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('resultsState').classList.remove('hidden');
+
+            animateValue(document.getElementById('matchCount'), data.total_analyzed);
+            document.getElementById('likelyOutcome').innerText = data.likely_outcome.toUpperCase();
+            document.getElementById('avgDuration').innerHTML = `${(data.avg_duration_days / 365).toFixed(1)} <span class="text-sm font-normal">Years</span>`;
+
+            const matchList = document.getElementById('matchList');
+            matchList.innerHTML = `
+                <div class="p-4 bg-indigo-50/30 border border-indigo-100 rounded-xl">
+                    <div class="text-xs font-bold text-indigo-600 mb-1">AI INSIGHT</div>
+                    <p class="text-[11px] text-gray-600 italic leading-relaxed">
+                        Based on ${data.total_analyzed} matched cases from the High Court metadata, ${data.likely_outcome} is the most frequent disposal mode for cases registered during this period.
+                    </p>
+                </div>
+            `;
+        } catch (e) {
+            console.error(e);
+        } finally {
+            btn.innerHTML = 'RUN HISTORICAL SIMULATION';
+            btn.disabled = false;
+        }
+    };
+
+    function animateValue(obj, end) {
+        let start = 0;
+        const duration = 1500;
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * end);
+            if (progress < 1) window.requestAnimationFrame(step);
+        };
+        window.requestAnimationFrame(step);
+    }
+</script>
+{% endblock %}
