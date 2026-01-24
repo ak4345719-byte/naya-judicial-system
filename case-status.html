@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}Case Status | Naya Judicial System{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in opacity-0" id="mainContent">
+
+    
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Case Status</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Track and manage your legal cases</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="window.location.reload()"
+                class="p-2 text-gray-400 hover:text-indigo-600 transition-colors">
+                <span class="iconify" data-icon="lucide:refresh-cw" data-width="20"></span>
+            </button>
+        </div>
+    </div>
+
+    
+    <div
+        class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-soft border border-gray-100 dark:border-gray-800">
+        <div class="flex flex-col md:flex-row gap-4">
+            
+            <div class="flex-1 relative">
+                <span class="absolute left-4 top-3.5 text-gray-400 iconify" data-icon="lucide:search"
+                    data-width="20"></span>
+                <input type="text" id="caseSearchInput" placeholder="Search by Case Number, Client Name..."
+                    class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none text-gray-900 dark:text-white">
+            </div>
+
+            
+            <div class="relative">
+                <select id="statusFilter"
+                    class="appearance-none w-full md:w-48 pl-4 pr-10 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-gray-900 dark:text-white cursor-pointer">
+                    <option value="all">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Hearing Today">Hearing Today</option>
+                    <option value="Closed">Closed</option>
+                </select>
+                <span class="absolute right-4 top-3.5 text-gray-400 iconify pointer-events-none"
+                    data-icon="lucide:chevron-down" data-width="20"></span>
+            </div>
+
+            <button onclick="searchCases()"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2">
+                Search
+            </button>
+        </div>
+    </div>
+
+    
+    <div id="resultsSection" class="space-y-4">
+        
+        <div id="loadingSkeleton" class="hidden space-y-4">
+            <div class="h-24 bg-gray-100 dark:bg-gray-800 rounded-2xl animate-pulse w-full"></div>
+            <div class="h-24 bg-gray-100 dark:bg-gray-800 rounded-2xl animate-pulse w-full"></div>
+            <div class="h-24 bg-gray-100 dark:bg-gray-800 rounded-2xl animate-pulse w-full"></div>
+        </div>
+
+        
+        <div id="casesList" class="grid grid-cols-1 gap-4">
+            
+            <div class="text-center py-12 text-gray-400">
+                <span class="iconify mx-auto mb-3 opacity-50" data-icon="lucide:folder-search" data-width="48"></span>
+                <p>Enter a search term or select a filter to view cases.</p>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="caseDetailsModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog"
+        aria-modal="true">
+        
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeModal()"></div>
+
+        
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div
+                    class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-surface-dark text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-gray-100 dark:border-gray-700">
+
+                    
+                    <div
+                        class="bg-gray-50 dark:bg-white/5 px-4 py-4 sm:px-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold leading-6 text-gray-900 dark:text-white" id="modal-title">Case
+                            Details</h3>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-500 transition-colors">
+                            <span class="iconify" data-icon="lucide:x" data-width="24"></span>
+                        </button>
+                    </div>
+
+                    
+                    <div class="px-4 py-5 sm:p-6 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Case
+                                    Number</label>
+                                <div id="modalCaseNumber" class="text-base font-bold text-gray-900 dark:text-white">-
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Status</label>
+                                <span id="modalStatus"
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    -
+                                </span>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label
+                                    class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Parties</label>
+                                <div class="text-base font-medium text-gray-900 dark:text-white">
+                                    <span id="modalPlaintiff" class="text-indigo-600 dark:text-indigo-400"></span>
+                                    <span class="text-gray-400 mx-2">vs.</span>
+                                    <span id="modalDefendant" class="text-rose-600 dark:text-rose-400"></span>
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Case
+                                    Type</label>
+                                <div id="modalCaseType" class="text-sm text-gray-700 dark:text-gray-300">-</div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Priority</label>
+                                <div id="modalPriority" class="text-sm text-gray-700 dark:text-gray-300">-</div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Next
+                                    Hearing</label>
+                                <div id="modalHearingDate" class="text-sm font-semibold text-gray-900 dark:text-white">-
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Filing
+                                    Date</label>
+                                <div id="modalFilingDate" class="text-sm text-gray-700 dark:text-gray-300">-</div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 dark:border-gray-700 pt-4 mt-4">
+                            <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3">Additional Info</h4>
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div class="bg-gray-50 dark:bg-white/5 p-2 rounded-lg">
+                                    <div id="modalWitnesses" class="text-lg font-bold text-gray-900 dark:text-white">0
+                                    </div>
+                                    <div class="text-xs text-gray-500">Witnesses</div>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-white/5 p-2 rounded-lg">
+                                    <div id="modalAdvocates" class="text-lg font-bold text-gray-900 dark:text-white">0
+                                    </div>
+                                    <div class="text-xs text-gray-500">Advocates</div>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-white/5 p-2 rounded-lg">
+                                    <div id="modalPrevHearings" class="text-lg font-bold text-gray-900 dark:text-white">
+                                        0</div>
+                                    <div class="text-xs text-gray-500">Hearings</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div
+                        class="bg-gray-50 dark:bg-white/5 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100 dark:border-gray-700">
+                        <button type="button" onclick="window.location.href='/chat'"
+                            class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
+                            Ask AI Assistant
+                        </button>
+                        <button type="button" onclick="closeModal()"
+                            class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-surface-dark text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let allCases = []; 
+
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('mainContent').classList.remove('opacity-0');
+        loadAllCases();
+    });
+
+    async function loadAllCases() {
+        showLoading(true);
+        try {
+            
+            const res = await fetch('/api/cases?limit=20');
+            if (res.ok) {
+                const data = await res.json();
+                allCases = data.cases || []; 
+                renderCases(allCases);
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('casesList').innerHTML = `<div class="p-4 text-center text-red-500">Failed to load cases.</div>`;
+        }
+        showLoading(false);
+    }
+
+    async function searchCases() {
+        const query = document.getElementById('caseSearchInput').value.trim();
+        const status = document.getElementById('statusFilter').value;
+
+        showLoading(true);
+
+        try {
+            
+            
+            const res = await fetch(`/api/cases?search=${encodeURIComponent(query)}&limit=50`);
+
+            if (res.ok) {
+                const data = await res.json();
+                const fetchedCases = data.cases || [];
+
+                
+                let filtered = fetchedCases.filter(c => {
+                    const matchStatus = status === 'all' ? true : (c.status || 'Pending').toLowerCase() === status.toLowerCase();
+                    return matchStatus;
+                });
+
+                allCases = filtered; 
+                renderCases(filtered);
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('casesList').innerHTML = `<div class="p-4 text-center text-red-500">Error searching cases.</div>`;
+        }
+        showLoading(false);
+    }
+
+    function renderCases(cases) {
+        const container = document.getElementById('casesList');
+        if (cases.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-12 text-gray-400">
+                    <span class="iconify mx-auto mb-3 opacity-50" data-icon="lucide:inbox" data-width="48"></span>
+                    <p>No cases found matching your criteria.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = cases.map(c => `
+            <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-all group relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full ${getStatusColor(c.status)}"></div>
+                
+                <div class="flex flex-col md:flex-row justify-between gap-4">
+                    
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-1">
+                            <span class="font-mono text-sm font-bold text-gray-500 bg-gray-100 dark:bg-white/10 px-2 py-0.5 rounded">${c.caseNumber}</span>
+                            <span class="text-xs font-semibold uppercase tracking-wider ${getStatusBadgeColor(c.status)} px-2 py-0.5 rounded-full border border-current opacity-80">${c.status}</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 transition-colors">
+                            ${c.plaintiff || 'Unknown'} vs. ${c.defendant || 'Unknown'}
+                        </h3>
+                        <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                            <span class="flex items-center gap-1"><span class="iconify" data-icon="lucide:gavel" data-width="14"></span> ${c.caseType}</span>
+                            <span class="flex items-center gap-1"><span class="iconify" data-icon="lucide:calendar" data-width="14"></span> Next Hearing: <span class="text-gray-900 dark:text-gray-200 font-medium">${c.hearingDate || 'Not Scheduled'}</span></span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="flex items-center gap-2 self-end md:self-center">
+                        <button onclick="viewCaseDetails('${c.caseNumber}')" class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 rounded-lg transition-colors">
+                            View Details
+                        </button>
+                        <button class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-50 dark:bg-white/5 rounded-lg transition-colors">
+                            <span class="iconify" data-icon="lucide:download" data-width="18"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function viewCaseDetails(caseNumber) {
+        const caseData = allCases.find(c => c.caseNumber === caseNumber);
+        if (!caseData) return;
+
+        
+        document.getElementById('modalCaseNumber').textContent = caseData.caseNumber;
+        document.getElementById('modalStatus').textContent = caseData.status || 'Pending';
+        document.getElementById('modalPlaintiff').textContent = caseData.plaintiff || 'State';
+        document.getElementById('modalDefendant').textContent = caseData.defendant || 'Defendant';
+        document.getElementById('modalCaseType').textContent = caseData.caseType || '-';
+        document.getElementById('modalPriority').textContent = caseData.priority || 'Normal';
+        document.getElementById('modalHearingDate').textContent = caseData.hearingDate || 'Not Scheduled';
+        document.getElementById('modalFilingDate').textContent = caseData.filingDate || 'Recently';
+        document.getElementById('modalWitnesses').textContent = caseData.witnesses || '0';
+        document.getElementById('modalAdvocates').textContent = caseData.advocates || '0';
+        document.getElementById('modalPrevHearings').textContent = caseData.previous_hearings || '0';
+
+        
+        const badge = document.getElementById('modalStatus');
+        badge.className = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusBadgeColor(caseData.status)} bg-white`;
+
+        
+        document.getElementById('caseDetailsModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('caseDetailsModal').classList.add('hidden');
+    }
+
+    function getStatusColor(status) {
+        if (!status) return 'bg-gray-400';
+        status = status.toLowerCase();
+        if (status === 'closed') return 'bg-emerald-500';
+        if (status === 'urgent' || status === 'critical' || status === 'high') return 'bg-rose-500';
+        return 'bg-amber-500'; 
+    }
+
+    function getStatusBadgeColor(status) {
+        if (!status) return 'text-gray-500 border-gray-200';
+        status = status.toLowerCase();
+        if (status === 'closed') return 'text-emerald-600 border-emerald-200';
+        if (status === 'urgent' || status === 'critical' || status === 'high') return 'text-rose-600 border-rose-200';
+        return 'text-amber-600 border-amber-200';
+    }
+
+    function showLoading(show) {
+        const skel = document.getElementById('loadingSkeleton');
+        const list = document.getElementById('casesList');
+        if (show) {
+            skel.classList.remove('hidden');
+            list.classList.add('hidden');
+        } else {
+            skel.classList.add('hidden');
+            list.classList.remove('hidden');
+        }
+    }
+</script>
+
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+{% endblock %}

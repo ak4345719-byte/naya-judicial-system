@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Virtual Court - Naya Judicial System{% endblock %}
+
+{% block content %}
+<div class="h-[calc(100vh-140px)] flex flex-col">
+
+    <div class="flex justify-between items-center mb-4">
+        <div>
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <span class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                Virtual Hearing Room #401
+            </h1>
+            <p class="text-xs text-gray-500">Case: State vs. Rajesh Kumar (CR-2024-001)</p>
+        </div>
+        <div class="flex gap-3">
+            <button
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium">Waitroom
+                (2)</button>
+            <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium">End
+                Session</button>
+        </div>
+    </div>
+
+
+    <div class="flex-1 grid grid-cols-12 gap-4">
+
+
+        <div class="col-span-9 flex flex-col gap-4">
+
+            <div class="flex-1 bg-gray-900 rounded-2xl relative overflow-hidden group">
+                <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop"
+                    class="w-full h-full object-cover opacity-60" alt="Courtroom Feed">
+
+                <div class="absolute bottom-4 left-4 text-white">
+                    <div class="bg-black/50 px-3 py-1 rounded-lg backdrop-blur-sm text-sm font-medium">
+                        Justice Anirudh S. (Presiding)
+                    </div>
+                </div>
+
+
+                <div class="absolute top-4 right-4 bg-gray-800/80 p-2 rounded-full text-green-400">
+                    <span class="iconify" data-icon="lucide:mic" data-width="20"></span>
+                </div>
+            </div>
+
+
+            <div class="h-48 grid grid-cols-3 gap-4">
+                <div class="bg-gray-800 rounded-xl relative overflow-hidden">
+                    <div class="absolute inset-0 flex items-center justify-center text-gray-500">
+                        <span class="iconify" data-icon="lucide:user" data-width="48"></span>
+                    </div>
+                    <div class="absolute bottom-2 left-2 bg-black/50 px-2 py-0.5 rounded text-xs text-white">Adv. Sharma
+                        (Defense)</div>
+                    <div class="absolute top-2 right-2 text-red-400"><span class="iconify"
+                            data-icon="lucide:mic-off"></span></div>
+                </div>
+                <div class="bg-gray-800 rounded-xl relative overflow-hidden">
+                    <div class="absolute inset-0 flex items-center justify-center text-gray-500">
+                        <span class="iconify" data-icon="lucide:user" data-width="48"></span>
+                    </div>
+                    <div class="absolute bottom-2 left-2 bg-black/50 px-2 py-0.5 rounded text-xs text-white">Adv. Verma
+                        (Prosecution)</div>
+                </div>
+                <div class="bg-gray-800 rounded-xl relative overflow-hidden">
+                    <div class="absolute inset-0 flex items-center justify-center text-gray-500">
+                        <span class="iconify" data-icon="lucide:video-off" data-width="48"></span>
+                    </div>
+                    <div class="absolute bottom-2 left-2 bg-black/50 px-2 py-0.5 rounded text-xs text-white">Accused
+                        (Remote)</div>
+                </div>
+            </div>
+
+
+            <div class="flex justify-center gap-4 py-2">
+                <button class="p-4 bg-gray-200 rounded-full hover:bg-gray-300 transition text-gray-700"><span
+                        class="iconify" data-icon="lucide:mic" data-width="24"></span></button>
+                <button class="p-4 bg-gray-200 rounded-full hover:bg-gray-300 transition text-gray-700"><span
+                        class="iconify" data-icon="lucide:video" data-width="24"></span></button>
+                <button class="p-4 bg-gray-200 rounded-full hover:bg-gray-300 transition text-gray-700"><span
+                        class="iconify" data-icon="lucide:share" data-width="24"></span></button>
+                <button class="p-4 bg-gray-200 rounded-full hover:bg-gray-300 transition text-gray-700"><span
+                        class="iconify" data-icon="lucide:users" data-width="24"></span></button>
+            </div>
+        </div>
+
+
+        <div class="col-span-3 bg-white border border-gray-200 rounded-xl flex flex-col overflow-hidden">
+
+            <div class="flex border-b border-gray-200">
+                <button
+                    class="flex-1 py-3 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50">Evidence</button>
+                <button class="flex-1 py-3 text-sm font-medium text-gray-500 hover:text-gray-700">Transcript</button>
+            </div>
+
+
+            <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                <div
+                    class="p-3 border border-gray-100 rounded-lg hover:bg-gray-50 cursor-pointer flex gap-3 items-center group transition">
+                    <div class="bg-red-100 text-red-600 p-2 rounded">
+                        <span class="iconify" data-icon="lucide:file-text"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-medium text-gray-800 truncate">FIR Report.pdf</h4>
+                        <p class="text-xs text-gray-500">Added 2 days ago</p>
+                    </div>
+                    <span class="iconify text-gray-300 group-hover:text-indigo-600" data-icon="lucide:eye"></span>
+                </div>
+
+                <div
+                    class="p-3 border border-gray-100 rounded-lg hover:bg-gray-50 cursor-pointer flex gap-3 items-center group transition">
+                    <div class="bg-blue-100 text-blue-600 p-2 rounded">
+                        <span class="iconify" data-icon="lucide:image"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-medium text-gray-800 truncate">Site Map_v2.jpg</h4>
+                        <p class="text-xs text-gray-500">Prosecution Exhibit A</p>
+                    </div>
+                    <span class="iconify text-gray-300 group-hover:text-indigo-600" data-icon="lucide:eye"></span>
+                </div>
+
+                <div
+                    class="p-3 border border-gray-100 rounded-lg hover:bg-gray-50 cursor-pointer flex gap-3 items-center group transition">
+                    <div class="bg-green-100 text-green-600 p-2 rounded">
+                        <span class="iconify" data-icon="lucide:video"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-medium text-gray-800 truncate">CCTV Footage.mp4</h4>
+                        <p class="text-xs text-gray-500">Evidence #44</p>
+                    </div>
+                    <span class="iconify text-gray-300 group-hover:text-indigo-600" data-icon="lucide:play"></span>
+                </div>
+            </div>
+
+
+            <!-- Transcript Center -->
+            <div class="p-4 bg-gray-50 border-t border-gray-200">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-semibold text-gray-500 uppercase">Live AI Scribe</span>
+                    <div class="flex items-center gap-2">
+                        <span id="recordingStatus" class="hidden w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                        <span class="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">AI Active</span>
+                    </div>
+                </div>
+                <div class="h-32 bg-white border border-gray-200 rounded p-2 text-xs text-gray-600 overflow-y-auto italic font-mono leading-relaxed"
+                    id="liveTranscript">
+                    <p class="text-gray-400">Click microphone to start transcribing...</p>
+                </div>
+                <div class="mt-2 flex gap-2">
+                    <button id="startMic"
+                        class="px-3 py-1 bg-indigo-600 text-white text-xs rounded-md hover:bg-indigo-700 transition">Start
+                        Transcription</button>
+                    <button id="generateOrder"
+                        class="px-3 py-1 bg-emerald-600 text-white text-xs rounded-md hover:bg-emerald-700 transition">Generate
+                        Draft Order</button>
+                </div>
+            </div>
+
+            <!-- AI Intelligence Panel (NEW) -->
+            <div class="p-4 bg-indigo-50/50 border-t border-indigo-100">
+                <h4 class="text-[10px] font-bold text-indigo-500 uppercase tracking-tighter mb-2">Live AI Intelligence
+                </h4>
+                <div id="aiIntelligence" class="space-y-2 max-h-40 overflow-y-auto">
+                    <div class="text-[10px] text-indigo-400 italic">Listening for legal context...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Modal -->
+<div id="orderModal"
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl w-full max-w-3xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden">
+        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+            <h3 class="font-bold text-gray-800">AI-Generated Draft Order</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><span class="iconify"
+                    data-icon="lucide:x"></span></button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 font-serif leading-relaxed text-gray-800" id="orderContent">
+            Generating...
+        </div>
+        <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+            <button onclick="closeModal()" class="px-4 py-2 text-sm text-gray-500 font-medium">Cancel</button>
+            <button
+                class="px-6 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-indigo-200">Copy
+                & Finalize</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let recognition;
+    let fullTranscript = "";
+    const transcriptEl = document.getElementById('liveTranscript');
+    const intelligenceEl = document.getElementById('aiIntelligence');
+    const startBtn = document.getElementById('startMic');
+    const recStatus = document.getElementById('recordingStatus');
+
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+            recStatus.classList.remove('hidden');
+            startBtn.innerText = "Stop Transcription";
+            startBtn.className = "px-3 py-1 bg-red-600 text-white text-xs rounded-md hover:bg-red-700";
+        };
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    const segment = event.results[i][0].transcript;
+                    fullTranscript += segment + '. ';
+                    appendTranscript(segment, true);
+                    processSegment(segment);
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+        };
+
+        recognition.onend = () => {
+            recStatus.classList.add('hidden');
+            startBtn.innerText = "Start Transcription";
+            startBtn.className = "px-3 py-1 bg-indigo-600 text-white text-xs rounded-md hover:bg-indigo-700";
+        };
+    }
+
+    startBtn.onclick = () => {
+        if (recStatus.classList.contains('hidden')) {
+            recognition.start();
+        } else {
+            recognition.stop();
+        }
+    };
+
+    function appendTranscript(text, isFinal) {
+        if (transcriptEl.innerHTML.includes("Click microphone")) transcriptEl.innerHTML = "";
+        const div = document.createElement('div');
+        div.className = "mb-1 text-gray-700";
+        div.innerHTML = `<span class="text-indigo-400 font-bold mr-1">AUDIO:</span> ${text}`;
+        transcriptEl.appendChild(div);
+        transcriptEl.scrollTop = transcriptEl.scrollHeight;
+    }
+
+    async function processSegment(text) {
+        try {
+            const resp = await fetch('/api/live/process-segment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, case_number: "CR-2024-001" })
+            });
+            const data = await resp.json();
+            updateIntelligence(data);
+        } catch (e) {
+            console.error("AI Analysis failed", e);
+        }
+    }
+
+    function updateIntelligence(data) {
+        if (!data.citations && !data.precedents) return;
+
+        let html = '';
+        if (data.citations && data.citations.length > 0) {
+            html += `<div class="p-2 bg-white rounded border border-indigo-100 shadow-sm">
+                        <div class="text-[9px] font-bold text-indigo-400 mb-1">CITED STATUTES</div>
+                        <div class="flex flex-wrap gap-1">
+                            ${data.citations.map(c => `<span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[9px] font-medium border border-indigo-100">${c}</span>`).join('')}
+                        </div>
+                     </div>`;
+        }
+
+        if (data.precedents && data.precedents.length > 0) {
+            html += `<div class="p-2 bg-white rounded border border-indigo-100 shadow-sm">
+                        <div class="text-[9px] font-bold text-amber-500 mb-1">SUGGESTED PRECEDENTS</div>
+                        ${data.precedents.map(p => `
+                            <div class="mb-2 last:mb-0">
+                                <div class="text-[10px] font-bold text-gray-800">${p.title}</div>
+                                <div class="text-[9px] text-gray-500 leading-tight">${p.relevance}</div>
+                            </div>
+                        `).join('')}
+                     </div>`;
+        }
+
+        if (html) {
+            intelligenceEl.innerHTML = html + intelligenceEl.innerHTML;
+        }
+    }
+
+    document.getElementById('generateOrder').onclick = async () => {
+        const modal = document.getElementById('orderModal');
+        const content = document.getElementById('orderContent');
+        modal.classList.remove('hidden');
+        content.innerHTML = '<div class="flex flex-col items-center py-10"><span class="iconify animate-spin text-3xl text-indigo-600 mb-4" data-icon="lucide:loader-2"></span><span>Synthesizing hearing transcript into a formal order...</span></div>';
+
+        try {
+            const resp = await fetch('/api/live/generate-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    transcript: fullTranscript || "Simulated Hearing Transcript: Both parties presented arguments. Defense requested bail based on medical grounds. Prosecution opposed.",
+                    case_details: { title: "State vs. Rajesh Kumar", caseNumber: "CR-2024-001" }
+                })
+            });
+            const data = await resp.json();
+            content.innerHTML = `<div class="whitespace-pre-wrap">${data.order || "Failed to generate order."}</div>`;
+        } catch (e) {
+            content.innerHTML = "Error generating order.";
+        }
+    };
+
+    function closeModal() {
+        document.getElementById('orderModal').classList.add('hidden');
+    }
+</script>
+{% endblock %}
