@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Register Case - Naya Judicial System{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+  <div class="mb-6 border-b pb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Register New Case</h1>
+    <p class="text-gray-500">Enter case details to file a new hearing.</p>
+  </div>
+
+  <form id="caseForm" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Case Number</label>
+      <input type="text" id="caseNumber" required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+        placeholder="e.g. SC-2024-1005">
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Case Type</label>
+        <select id="caseType"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+          <option value="Civil">Civil</option>
+          <option value="Criminal">Criminal</option>
+          <option value="Constitutional">Constitutional</option>
+          <option value="Consumer">Consumer</option>
+          <option value="Corporate">Corporate</option>
+          <option value="Family">Family</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Case Priority</label>
+        <select id="casePriority"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+          <option value="Normal" selected>Normal</option>
+          <option value="High">Urgent (High Priority)</option>
+          <option value="Critical">Critical</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Hearing Date</label>
+        <input type="date" id="hearingDate" required
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-4">
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">Witnesses</label>
+        <input type="number" id="witnesses" value="0" min="0"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">Advocates</label>
+        <input type="number" id="advocates" value="2" min="1"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">Prev. Hearings</label>
+        <input type="number" id="previous_hearings" value="0" min="0"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+    </div>
+
+    <div class="pt-4">
+      <button type="submit" class="w-full btn-primary py-3 text-lg">
+        Register Case
+      </button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('caseForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      caseNumber: document.getElementById('caseNumber').value,
+      caseType: document.getElementById('caseType').value,
+      priority: document.getElementById('casePriority').value,
+      hearingDate: document.getElementById('hearingDate').value,
+      witnesses: parseInt(document.getElementById('witnesses').value),
+      advocates: parseInt(document.getElementById('advocates').value),
+      previous_hearings: parseInt(document.getElementById('previous_hearings').value),
+    };
+
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch('/api/register-case', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('Case registered successfully!');
+        window.location.href = '/cause-list';
+      } else {
+        alert('Error: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Connection error');
+    }
+  });
+</script>
+{% endblock %}

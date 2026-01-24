@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Naya Judicial System{% endblock %}</title>
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                fontFamily: {
+                    sans: ['Outfit', 'Inter', 'sans-serif'],
+                },
+                extend: {
+                    colors: {
+                        background: {
+                            light: '#F9FAFB',
+                            dark: '#121212',
+                        },
+                        surface: {
+                            light: '#FFFFFF',
+                            dark: '#1E1E1E',
+                        },
+                        primary: {
+                            DEFAULT: '#6366F1',
+                            hover: '#4F46E5',
+                        },
+                        text: {
+                            main: {
+                                light: '#111827',
+                                dark: '#F3F4F6',
+                            },
+                            muted: {
+                                light: '#6B7280',
+                                dark: '#9CA3AF',
+                            }
+                        },
+                        accent: {
+                            indigo: '#6366F1',
+                            violet: '#8B5CF6',
+                            emerald: '#10B981',
+                        }
+                    },
+                    borderRadius: {
+                        'xl': '12px',
+                        '2xl': '16px',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -1px rgb(0 0 0 / 0.05)',
+                        'glow': '0 0 15px rgba(99, 102, 241, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Premium Gloss & Glass */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+        }
+
+        html.dark .glass-card {
+            background: rgba(18, 18, 18, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .premium-sidebar-item {
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .premium-sidebar-item::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 60%;
+            background: #6366F1;
+            border-radius: 0 4px 4px 0;
+            transition: width 0.3s ease;
+        }
+
+        .premium-sidebar-item.active::after {
+            width: 4px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .premium-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F9FAFB;
+            color: #111827;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+
+        html.dark body {
+            background-color: #121212;
+            color: #F3F4F6;
+        }
+
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+
+        html.dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+
+        .smooth-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+
+        .glass-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        html.dark .glass-sidebar {
+            background: rgba(30, 30, 30, 0.95);
+            border-right: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+
+        .cmd-enter {
+            animation: cmdSlideDown 0.2s ease-out forwards;
+        }
+
+        @keyframes cmdSlideDown {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+
+        .drawer-enter {
+            transform: translateX(0);
+        }
+
+        .drawer-exit {
+            transform: translateX(100%);
+        }
+    </style>
+    {% block head %}{% endblock %}
+
+    <script>
+
+        const token = localStorage.getItem("token");
+        if (!token) window.location.href = "/";
+
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+
+<body class="antialiased selection:bg-indigo-500 selection:text-white">
+
+
+    <div id="sidebarBackdrop" class="fixed inset-0 z-30 bg-black/20 backdrop-blur-[1px] hidden md:hidden"
+        onclick="toggleMobileMenu()"></div>
+
+
+    <aside
+        class="fixed top-0 left-0 h-full w-64 glass-sidebar z-40 transform transition-transform duration-300 translate-x-[-100%] md:translate-x-0"
+        id="sidebar">
+
+        <div class="h-20 flex items-center px-8 border-b border-gray-100 dark:border-gray-800">
+            <div class="flex items-center gap-3 text-indigo-600 dark:text-indigo-400">
+                <span class="iconify" data-icon="lucide:scale" data-width="24"></span>
+                <span class="font-bold text-lg tracking-tight text-gray-900 dark:text-white">Naya<span
+                        class="text-indigo-600 dark:text-indigo-400">Judicial</span></span>
+            </div>
+        </div>
+
+
+        <nav class="p-4 space-y-1 overflow-y-auto h-[calc(100vh-5rem)]">
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2 mt-2">Main</div>
+
+            <a href="/dashboard" data-roles="admin,judge"
+                class="premium-sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 hover:text-indigo-600 dark:hover:text-indigo-400 {% if request.path == '/dashboard' or request.path == '/dashboard.html' %}active bg-indigo-50/80 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:layout-dashboard" data-width="18"
+                    data-stroke-width="1.5"></span>
+                Dashboard
+            </a>
+
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2 mt-6">Case Management
+            </div>
+
+            <a href="/cause-list" data-roles="admin,judge,clerk,lawyer"
+                class="premium-sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 hover:text-indigo-600 dark:hover:text-indigo-400 {% if request.path.startswith('/cause-list') %}active bg-indigo-50/80 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:list-todo" data-width="18" data-stroke-width="1.5"></span>
+                Cause List
+            </a>
+
+            <a href="/case-registration" data-roles="admin,clerk"
+                class="premium-sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 hover:text-indigo-600 dark:hover:text-indigo-400 {% if request.path.startswith('/case-registration') %}active bg-indigo-50/80 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:file-plus" data-width="18" data-stroke-width="1.5"></span>
+                Register Case
+            </a>
+
+            <a href="/judicial-map" data-roles="admin,judge"
+                class="premium-sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 hover:text-indigo-600 dark:hover:text-indigo-400 {% if request.path == '/judicial-map' %}active bg-indigo-50/80 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:map" data-width="18" data-stroke-width="1.5"></span>
+                Judicial Heatmap
+            </a>
+
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2 mt-6">Tools</div>
+
+            <a href="/smart-vault" data-roles="admin,judge,clerk"
+                class="premium-sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 hover:text-indigo-600 dark:hover:text-indigo-400 {% if request.path == '/smart-vault' %}active bg-indigo-50/80 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:vault" data-width="18" data-stroke-width="1.5"></span>
+                Smart Vault
+            </a>
+            <a href="/schedule"
+                class="premium-sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 hover:text-indigo-600 dark:hover:text-indigo-400 {% if request.path == '/schedule' %}active bg-indigo-50/80 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:calendar-days" data-width="18" data-stroke-width="1.5"></span>
+                Smart Schedule
+            </a>
+            <a href="/judges"
+                class="premium-sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 hover:text-indigo-600 dark:hover:text-indigo-400 {% if request.path == '/judges' %}active bg-indigo-50/80 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:gavel" data-width="18" data-stroke-width="1.5"></span>
+                Judges
+            </a>
+            <a href="/analytics" data-roles="admin,judge"
+                class="premium-sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 hover:text-indigo-600 dark:hover:text-indigo-400 {% if request.path == '/analytics' %}active bg-indigo-50/80 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:bar-chart-3" data-width="18" data-stroke-width="1.5"></span>
+                Analytics
+            </a>
+
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2 mt-6">AI Assist</div>
+
+            <a href="/chat" data-roles="admin,judge,clerk"
+                class="premium-sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 hover:text-indigo-600 dark:hover:text-indigo-400 {% if request.path == '/chat' %}active bg-indigo-50/80 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:sparkles" data-width="18" data-stroke-width="1.5"></span>
+                Judicial Assistant
+            </a>
+            <a href="/predictor" data-roles="admin,judge,clerk"
+                class="premium-sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-500/5 hover:text-indigo-600 dark:hover:text-indigo-400 {% if request.path == '/predictor' %}active bg-indigo-50/80 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:brain-circuit" data-width="18" data-stroke-width="1.5"></span>
+                Duration Predictor
+            </a>
+            <a href="/outcome-predictor" data-roles="admin,judge"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all {% if request.path == '/outcome-predictor' %}bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:trending-up" data-width="18" data-stroke-width="1.5"></span>
+                Outcome Predictor
+            </a>
+            <a href="/legal-research" data-roles="admin,judge,lawyer"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all {% if request.path == '/legal-research' %}bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:book-open" data-width="18" data-stroke-width="1.5"></span>
+                Legal Research
+            </a>
+            <a href="/case-status" data-roles="admin,lawyer"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all {% if request.path == '/case-status' %}bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400{% endif %}">
+                <span class="iconify" data-icon="lucide:briefcase" data-width="18" data-stroke-width="1.5"></span>
+                Case Status
+            </a>
+        </nav>
+    </aside>
+
+
+    <div class="md:pl-64 flex flex-col min-h-screen">
+
+
+        <header
+            class="h-20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-8 sticky top-0 z-30">
+
+            <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-500 hover:text-indigo-600">
+                <span class="iconify" data-icon="lucide:menu" data-width="24"></span>
+            </button>
+
+
+            <button onclick="toggleCommandPalette()"
+                class="hidden md:flex items-center gap-3 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-400 hover:border-indigo-500 hover:text-gray-500 dark:hover:text-gray-300 transition-all shadow-sm w-64 group">
+                <span class="iconify group-hover:text-indigo-500" data-icon="lucide:search" data-width="18"></span>
+                <span>Search...</span>
+                <span
+                    class="ml-auto text-xs bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-gray-500 font-medium">⌘K</span>
+            </button>
+
+
+            <div class="flex items-center gap-4">
+
+                <button onclick="toggleTheme()"
+                    class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:bg-white dark:hover:bg-white/10 hover:text-indigo-600 transition-all">
+                    <span id="themeIcon" class="iconify" data-icon="lucide:moon" data-width="20"></span>
+                </button>
+
+
+                <button onclick="toggleActivityDrawer()"
+                    class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:bg-white dark:hover:bg-white/10 hover:text-indigo-600 transition-all relative">
+                    <span class="iconify" data-icon="lucide:history" data-width="20"></span>
+                </button>
+
+
+                <div class="pl-4 border-l border-gray-200 dark:border-gray-700 flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-sm font-semibold text-gray-900 dark:text-white" id="headerUserName">User</div>
+                        <div class="text-xs text-gray-500 font-medium">Judicial Officer</div>
+                    </div>
+                    <button onclick="logout()"
+                        class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold border-2 border-white dark:border-gray-800 shadow-sm hover:scale-105 transition-transform">
+                        JS
+                    </button>
+                </div>
+            </div>
+        </header>
+
+
+        <main class="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full">
+            {% block content %}{% endblock %}
+        </main>
+
+        <div class="p-6 text-center text-xs text-gray-400">
+            Naya Judicial System &copy; 2026. Official Gov Portal.
+        </div>
+    </div>
+
+
+    <div id="cmdPalette"
+        class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm items-start justify-center pt-[15vh]"
+        onclick="if(event.target === this) toggleCommandPalette()">
+        <div
+            class="w-full max-w-lg bg-white dark:bg-[#1E1E1E] rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700 cmd-enter flex flex-col max-h-[60vh]">
+            <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-3">
+                <span class="iconify text-indigo-500" data-icon="lucide:search" data-width="20"></span>
+                <input type="text" placeholder="Type a command or search..."
+                    class="flex-1 bg-transparent border-none outline-none text-gray-900 dark:text-white placeholder:text-gray-400 text-lg">
+                <span
+                    class="text-xs font-bold text-gray-400 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded">ESC</span>
+            </div>
+            <div class="overflow-y-auto p-2 space-y-1">
+                <div class="px-3 py-2 text-xs font-bold text-gray-400 uppercase">AI Search & Actions</div>
+                <div id="cmdSearchResults" class="space-y-1">
+                    <!-- AI Results -->
+                </div>
+                <div class="px-3 py-2 text-xs font-bold text-gray-400 uppercase mt-4">System Shortcuts</div>
+                <button onclick="window.location.href='/case-registration'"
+                    class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-400 text-gray-600 dark:text-gray-300 transition-colors group">
+                    <span class="iconify text-gray-400 group-hover:text-indigo-500"
+                        data-icon="lucide:plus-circle"></span>
+                    Register New Case
+                </button>
+                <button onclick="window.location.href='/schedule'"
+                    class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-400 text-gray-600 dark:text-gray-300 transition-colors group">
+                    <span class="iconify text-gray-400 group-hover:text-indigo-500" data-icon="lucide:calendar"></span>
+                    View Schedule
+                </button>
+                <button onclick="window.location.href='/analytics'"
+                    class="w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-400 text-gray-600 dark:text-gray-300 transition-colors group">
+                    <span class="iconify text-gray-400 group-hover:text-indigo-500"
+                        data-icon="lucide:bar-chart-2"></span>
+                    Open Analytics
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="activityDrawerBackdrop" class="fixed inset-0 z-50 hidden bg-black/20 backdrop-blur-[1px]"
+        onclick="toggleActivityDrawer()"></div>
+    <aside id="activityDrawer"
+        class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-[#1E1E1E] border-l border-gray-200 dark:border-gray-800 z-50 transform translate-x-full transition-transform duration-300 shadow-2xl p-6 overflow-y-auto">
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Recent Activity</h3>
+            <button onclick="toggleActivityDrawer()"
+                class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500">
+                <span class="iconify" data-icon="lucide:x" data-width="20"></span>
+            </button>
+        </div>
+
+        <div class="space-y-6 relative border-l border-gray-200 dark:border-gray-700 ml-3">
+
+            <div class="ml-6 relative">
+                <span
+                    class="absolute -left-[2.15rem] top-1 w-3 h-3 rounded-full bg-indigo-500 ring-4 ring-white dark:ring-[#1E1E1E]"></span>
+                <div class="text-sm font-semibold text-gray-900 dark:text-white">New Case Registered</div>
+                <div class="text-xs text-gray-500 mt-1">Case #2024-902 added to registry by Clerk.</div>
+                <div class="text-[10px] font-medium text-gray-400 mt-2">Just now</div>
+            </div>
+
+            <div class="ml-6 relative">
+                <span
+                    class="absolute -left-[2.15rem] top-1 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white dark:ring-[#1E1E1E]"></span>
+                <div class="text-sm font-semibold text-gray-900 dark:text-white">Hearing Concluded</div>
+                <div class="text-xs text-gray-500 mt-1">Justice Anirudh marked case #2023-112 as 'Disposed'.</div>
+                <div class="text-[10px] font-medium text-gray-400 mt-2">2 hours ago</div>
+            </div>
+
+            <div class="ml-6 relative">
+                <span
+                    class="absolute -left-[2.15rem] top-1 w-3 h-3 rounded-full bg-amber-500 ring-4 ring-white dark:ring-[#1E1E1E]"></span>
+                <div class="text-sm font-semibold text-gray-900 dark:text-white">Bail Application Rejected</div>
+                <div class="text-xs text-gray-500 mt-1">System flagged high flight risk for Defendant.</div>
+                <div class="text-[10px] font-medium text-gray-400 mt-2">5 hours ago</div>
+            </div>
+        </div>
+    </aside>
+
+
+    <div id="toast-container"
+        class="fixed bottom-6 right-6 z-[60] space-y-3 flex flex-col items-end pointer-events-none"></div>
+
+
+    <script>
+
+
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.theme = 'light';
+                updateThemeIcon(false);
+            } else {
+                html.classList.add('dark');
+                localStorage.theme = 'dark';
+                updateThemeIcon(true);
+            }
+        }
+        function updateThemeIcon(isDark) {
+            const icon = document.getElementById('themeIcon');
+            icon.setAttribute('data-icon', isDark ? 'lucide:sun' : 'lucide:moon');
+        }
+        window.addEventListener('load', () => updateThemeIcon(document.documentElement.classList.contains('dark')));
+
+
+        const cmdPalette = document.getElementById('cmdPalette');
+        const cmdInput = cmdPalette.querySelector('input');
+        const cmdResults = document.getElementById('cmdSearchResults');
+
+        function toggleCommandPalette() {
+            if (cmdPalette.classList.contains('hidden')) {
+                cmdPalette.classList.remove('hidden');
+                cmdPalette.classList.add('flex');
+                cmdInput.focus();
+            } else {
+                cmdPalette.classList.add('hidden');
+                cmdPalette.classList.remove('flex');
+            }
+        }
+
+        let cmdSearchTimeout = null;
+        cmdInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            clearTimeout(cmdSearchTimeout);
+
+            if (query.length < 2) {
+                cmdResults.innerHTML = '';
+                return;
+            }
+
+            cmdSearchTimeout = setTimeout(async () => {
+                cmdResults.innerHTML = `
+                    <div class="px-3 py-2 text-xs text-gray-400 flex items-center gap-2">
+                        <span class="iconify animate-spin" data-icon="lucide:loader-2"></span>
+                        AI is matching patterns...
+                    </div>
+                `;
+
+                try {
+                    // Innovative: Trigger real simulation from the search box
+                    const resp = await fetch('/api/ai/simulate-outcome', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ statute: query })
+                    });
+                    const data = await resp.json();
+
+                    cmdResults.innerHTML = `
+                        <button onclick="window.location.href='/outcome-predictor'" class="w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-500/10 group transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="iconify text-indigo-500" data-icon="lucide:trending-up"></span>
+                                <div>
+                                    <div class="text-sm font-bold text-gray-900 dark:text-white">Historical Outcome Simulation</div>
+                                    <div class="text-xs text-gray-500">Likely: ${data.likely_outcome} (${data.total_analyzed} cases)</div>
+                                </div>
+                            </div>
+                            <span class="iconify text-gray-300 group-hover:text-indigo-400" data-icon="lucide:chevron-right"></span>
+                        </button>
+                    `;
+                } catch (err) {
+                    cmdResults.innerHTML = '<div class="px-3 py-2 text-xs text-red-400">Search failed</div>';
+                }
+            }, 500);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                toggleCommandPalette();
+            }
+            if (e.key === 'Escape' && !cmdPalette.classList.contains('hidden')) {
+                toggleCommandPalette();
+            }
+        });
+
+
+        const drawer = document.getElementById('activityDrawer');
+        const backdrop = document.getElementById('activityDrawerBackdrop');
+        function toggleActivityDrawer() {
+            const isOpen = !drawer.classList.contains('translate-x-full');
+            if (isOpen) {
+                drawer.classList.add('translate-x-full');
+                backdrop.classList.add('hidden');
+            } else {
+                drawer.classList.remove('translate-x-full');
+                backdrop.classList.remove('hidden');
+            }
+        }
+
+
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+
+            let bgClass = 'bg-white dark:bg-[#1E1E1E]';
+            let icon = 'info';
+            let iconColor = 'text-indigo-500';
+
+            if (type === 'success') { icon = 'check-circle'; iconColor = 'text-emerald-500'; }
+            if (type === 'error') { icon = 'alert-triangle'; iconColor = 'text-red-500'; }
+
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 ${bgClass} transform translate-x-10 opacity-0 transition-all duration-300`;
+            toast.innerHTML = `
+                <span class="iconify ${iconColor}" data-icon="lucide:${icon}" data-width="20"></span>
+                <span class="text-sm font-medium text-gray-800 dark:text-gray-200">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-x-10', 'opacity-0');
+            });
+
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+        function toggleMobileMenu() {
+            const isClosed = sidebar.classList.contains('translate-x-[-100%]');
+            if (isClosed) {
+                sidebar.classList.remove('translate-x-[-100%]');
+                sidebarBackdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('translate-x-[-100%]');
+                sidebarBackdrop.classList.add('hidden');
+            }
+        }
+
+        mobileBtn?.addEventListener('click', toggleMobileMenu);
+
+
+        function logout() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            window.location.href = '/';
+        }
+
+
+
+        const userName = localStorage.getItem('userName');
+        const userRole = localStorage.getItem('role') || 'guest';
+
+        if (userName) {
+            const nameEl = document.getElementById('headerUserName');
+            if (nameEl) nameEl.innerText = userName;
+        }
+
+        const links = document.querySelectorAll('[data-roles]');
+        links.forEach(link => {
+            const roles = link.getAttribute('data-roles').split(',');
+            if (!roles.includes(userRole)) {
+                link.classList.add('hidden');
+            }
+        });
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

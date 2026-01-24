@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Naya Judicial System
+=======
+# Naya Judicial System (NJS) ⚖️
+>>>>>>> fb27b5b (feat: implement backend and update gitignore)
 > **The Future of Justice, Powered by AI.**
 
 **Naya Judicial System** is a next-generation judicial management platform designed to eliminate case pendency and modernize court proceedings. Built on a high-tier tech stack with **Google Gemini 2.0 Pro** and **Local LLMs**, NJS provides judges, clerks, and citizens with a seamless, secure, and intelligent legal ecosystem.

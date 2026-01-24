@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Legal Research - Naya Judicial System{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Legal Research Assistant</h1>
+            <p class="text-sm text-gray-500">AI-powered precedent search and case law analysis.</p>
+        </div>
+    </div>
+
+    
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1 relative">
+                <span class="absolute left-3 top-3 text-gray-400">
+                    <span class="iconify" data-icon="lucide:search" data-width="20"></span>
+                </span>
+                <input type="text" id="searchQuery"
+                    class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                    placeholder="Search for cases, statutes, or legal concepts (e.g., 'adverse possession details under IPC')...">
+            </div>
+            <select
+                class="px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 outline-none focus:ring-2 focus:ring-indigo-500">
+                <option>All Courts</option>
+                <option>Supreme Court</option>
+                <option>High Courts</option>
+                <option>Tribunals</option>
+            </select>
+            <button onclick="performSearch()"
+                class="px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2">
+                <span>Search</span>
+                <span id="searchSpinner" class="hidden animate-spin iconify" data-icon="lucide:loader-2"></span>
+            </button>
+        </div>
+
+        
+        <div class="mt-4 flex gap-2 flex-wrap">
+            <span class="text-sm text-gray-500 self-center">Trending:</span>
+            <button onclick="setQuery('Section 138 Negotiable Instruments Act')"
+                class="px-3 py-1 bg-gray-100 text-xs text-gray-600 rounded-full hover:bg-gray-200 transition">Section
+                138 NI Act</button>
+            <button onclick="setQuery('Land Acquisition Compensation')"
+                class="px-3 py-1 bg-gray-100 text-xs text-gray-600 rounded-full hover:bg-gray-200 transition">Land
+                Acquisition</button>
+            <button onclick="setQuery('Right to Privacy Precedents')"
+                class="px-3 py-1 bg-gray-100 text-xs text-gray-600 rounded-full hover:bg-gray-200 transition">Right to
+                Privacy</button>
+        </div>
+    </div>
+
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-2 space-y-4" id="resultsContainer">
+            
+            <div class="text-center py-20 bg-white rounded-xl border border-dashed border-gray-200">
+                <div class="text-gray-300 mb-3">
+                    <span class="iconify mx-auto" data-icon="lucide:book-open" data-width="48"></span>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900">Start Your Research</h3>
+                <p class="text-gray-500 max-w-sm mx-auto mt-1">Enter a query above to search through millions of legal
+                    documents and identified precedents.</p>
+            </div>
+        </div>
+
+        
+        <div class="lg:col-span-1">
+            <div class="bg-indigo-50 p-5 rounded-xl border border-indigo-100 sticky top-24">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="iconify text-indigo-600" data-icon="lucide:sparkles" data-width="20"></span>
+                    <h3 class="font-semibold text-indigo-900">AI Insight</h3>
+                </div>
+                <div id="aiSummary" class="text-sm text-indigo-800 leading-relaxed">
+                    Perform a search to get an AI-generated summary of the legal landscape regarding your query.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template id="resultCardTemplate">
+    <div class="bg-white p-5 rounded-xl border border-gray-200 hover:shadow-md transition-shadow group cursor-pointer">
+        <div class="flex justify-between items-start mb-2">
+            <div>
+                <span
+                    class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 mb-2 court-badge">SUPREME
+                    COURT</span>
+                <h3
+                    class="text-lg font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors case-title">
+                    Case Title Here</h3>
+                <div class="text-xs text-gray-500 mt-1 citation">Citation: 2024 SCC OnLine SC 123</div>
+            </div>
+            <span class="text-xs font-medium text-gray-400 date">Jan 15, 2024</span>
+        </div>
+        <p class="text-sm text-gray-600 line-clamp-3 snippet">
+            Lorem ipsum dolor sit amet...
+        </p>
+        <div class="mt-4 flex gap-3">
+            <span class="text-xs flex items-center gap-1 text-gray-500">
+                <span class="iconify" data-icon="lucide:message-square"></span> <span class="judges-count">3
+                    Judges</span>
+            </span>
+            <span class="text-xs flex items-center gap-1 text-green-600 font-medium">
+                <span class="iconify" data-icon="lucide:check-circle"></span> Cited 14 times
+            </span>
+        </div>
+    </div>
+</template>
+
+<script>
+    function setQuery(q) {
+        document.getElementById('searchQuery').value = q;
+        performSearch();
+    }
+
+    async function performSearch() {
+        const query = document.getElementById('searchQuery').value;
+        if (!query.trim()) return;
+
+        const btn = document.querySelector('button[onclick="performSearch()"] span:first-child');
+        const spinner = document.getElementById('searchSpinner');
+        const container = document.getElementById('resultsContainer');
+        const aiBox = document.getElementById('aiSummary');
+
+        
+        btn.textContent = "Searching...";
+        spinner.classList.remove('hidden');
+        container.innerHTML = '<div class="py-20 text-center"><span class="iconify animate-spin text-indigo-600 mx-auto" data-icon="lucide:loader" data-width="32"></span></div>';
+
+        try {
+            const res = await fetch('/api/research', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+            const data = await res.json();
+
+            
+            container.innerHTML = '';
+
+            
+            const template = document.getElementById('resultCardTemplate');
+
+            if (data.results.length === 0) {
+                container.innerHTML = '<div class="p-8 text-center text-gray-500">No results found.</div>';
+            } else {
+                data.results.forEach(item => {
+                    const clone = template.content.cloneNode(true);
+
+                    const titleEl = clone.querySelector('.case-title');
+                    titleEl.textContent = item.title;
+                    if (item.link) {
+                        
+                        titleEl.innerHTML = `<a href="${item.link}" target="_blank" class="hover:underline">${item.title}  <span class="iconify inline text-xs" data-icon="lucide:external-link"></span></a>`;
+                    }
+
+                    clone.querySelector('.citation').textContent = `Citation: ${item.citation || 'N/A'}`;
+                    clone.querySelector('.date').textContent = item.date || '';
+                    clone.querySelector('.snippet').textContent = item.snippet;
+                    clone.querySelector('.court-badge').textContent = (item.court || 'India').toUpperCase();
+                    container.appendChild(clone);
+                });
+            }
+
+            
+            aiBox.innerHTML = '';
+            typeWriter(aiBox, data.ai_summary);
+
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<div class="p-4 text-red-500 bg-red-50 rounded-lg">Error performing search.</div>';
+        } finally {
+            btn.textContent = "Search";
+            spinner.classList.add('hidden');
+        }
+    }
+
+    function typeWriter(element, text, index = 0) {
+        if (index < text.length) {
+            element.textContent += text.charAt(index);
+            setTimeout(() => typeWriter(element, text, index + 1), 10); 
+        }
+    }
+</script>
+{% endblock %}

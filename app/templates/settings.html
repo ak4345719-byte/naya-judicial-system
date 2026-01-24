@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Naya Judicial System{% endblock %}
+
+{% block head %}
+<style>
+  
+  .tabs {
+    margin-top: 0px;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .tab {
+    padding: 10px 18px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #64748b;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .tab:hover {
+    color: var(--color-primary);
+  }
+
+  .tab.active {
+    background: white;
+    color: var(--color-primary);
+    border: 1px solid var(--color-border);
+    border-bottom: none;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  
+  .form-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+    max-width: 600px;
+  }
+
+  .form-section h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1e293b;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="time"],
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    ring: 2px solid #eef2ff;
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-2">Settings</h1>
+<p class="text-gray-500 mb-6">Configure the Naya Judicial System preferences.</p>
+
+<div class="tabs">
+  <div class="tab active" data-target="profile">Profile</div>
+  <div class="tab" data-target="security">Security</div>
+  <div class="tab" data-target="ai">AI Configuration</div>
+  <div class="tab" data-target="causerules">Cause List Rules</div>
+  <div class="tab" id="demoTab" data-target="demo" style="display:none">Hackathon Demo</div>
+</div>
+
+<div id="profile" class="tab-content active">
+  <div class="form-section">
+    <h2>Profile Settings</h2>
+    <label>Judge Name</label>
+    <input type="text" id="judgeName" placeholder="Hon. Jane Doe" value="Hon. Anirudh S.">
+    <label>Court Name</label>
+    <input type="text" id="courtName" placeholder="Court Name" value="Supreme Court of India">
+    <label>Email</label>
+    <input type="email" id="email" value="judge@court.gov.in">
+    <button class="btn-primary mt-2" onclick="alert('Saved!')">Save Profile</button>
+  </div>
+</div>
+
+<div id="security" class="tab-content">
+  <div class="form-section">
+    <h2>Security</h2>
+    <p class="text-gray-500 mb-4">Change your password and security settings.</p>
+    <button class="btn-primary bg-red-500 hover:bg-red-600">Reset Password</button>
+  </div>
+</div>
+
+<div id="ai" class="tab-content">
+  <div class="form-section">
+    <h2>AI Configuration</h2>
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="enableAI" checked> Enable AI Predictions</label>
+    </div>
+
+    <label>Model Type</label>
+    <select id="modelSelect">
+      <option value="mistral">Mistral (Ollama)</option>
+      <option value="gemini">Google Gemini</option>
+      <option value="openai">OpenAI (GPT-4o)</option>
+    </select>
+
+    <p class="mt-4 text-sm"><strong>Model Speed:</strong> <span id="modelSpeed">45.2</span> tok/s</p>
+    <button class="btn-primary mt-4" onclick="alert('Model Retrained!')">Retrain Model</button>
+  </div>
+</div>
+
+<div id="causerules" class="tab-content">
+  <div class="form-section">
+    <h2>Cause List Rules</h2>
+    <div class="checkbox-group">
+      <label><input type="checkbox" checked> Prioritize Criminal Cases</label>
+      <label><input type="checkbox" checked> Oldest Case First</label>
+    </div>
+    <button class="btn-primary mt-2" onclick="alert('Rules Updated!')">Save Rules</button>
+  </div>
+</div>
+
+<div id="demo" class="tab-content">
+  <div class="form-section border-l-4 border-l-indigo-500">
+    <h2 class="flex items-center gap-2">🚀 Hackathon Demo Zone</h2>
+    <p class="text-gray-500 mb-4">Instantly populate the dashboard with realistic mock data for presentation.</p>
+
+    <div class="bg-yellow-50 text-yellow-800 p-4 rounded-lg text-sm mb-6 border border-yellow-200">
+      <strong>Warning:</strong> This will delete all existing cases and judges and replace them with fresh demo data.
+    </div>
+
+    <button id="seedBtn"
+      class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg flex items-center gap-2 transition-all">
+      <span class="iconify" data-icon="lucide:database" data-width="18"></span>
+      Seed Database with Demo Data
+    </button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  
+  document.getElementById('seedBtn').addEventListener('click', async () => {
+    if (!confirm("Are you sure? This will RESET all data.")) return;
+
+    const btn = document.getElementById('seedBtn');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = 'Seeding Data...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/seed-data', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        alert("Database Populated! Redirecting to Dashboard...");
+        window.location.href = '/dashboard';
+      } else {
+        alert("Error: " + (data.error || "Unknown"));
+      }
+    } catch (e) {
+      alert("Network Error");
+    } finally {
+      btn.innerHTML = oldText;
+      btn.disabled = false;
+    }
+  });
+
+  
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      t.classList.add('active');
+      document.getElementById(t.dataset.target).classList.add('active');
+    });
+  });
+
+  
+  const role = localStorage.getItem("role") || "";
+  if (role.toLowerCase() === 'admin') {
+    document.getElementById('demoTab').style.display = 'block';
+  }
+</script>
+{% endblock %}
